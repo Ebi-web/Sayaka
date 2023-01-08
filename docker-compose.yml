@@ -2,6 +2,8 @@ version: '3.7'
 
 services:
   app:
-    build: .
+    build: ./app
     ports:
       - "8080:8080"
+    volumes:
+      - "./app:/app"
