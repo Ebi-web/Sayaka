@@ -6,10 +6,9 @@ WORKDIR /app
 # Copy the application source code
 COPY . .
 
-RUN go mod tidy
-
 # Expose the application's port
 EXPOSE 8080
 
-RUN go install github.com/cosmtrek/air@latest
+RUN go install github.com/cosmtrek/air@latest && \
+    go mod tidy
 CMD ["air"]
