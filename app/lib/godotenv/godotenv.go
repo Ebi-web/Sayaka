@@ -1,21 +1,22 @@
-package lib
+package godotenv
 
 import (
+	"Sayaka/lib"
 	"github.com/joho/godotenv"
 )
 
-type Preparer interface {
-	Prepare() error
-}
+var _ lib.Preparer = &GoDotEnv{}
 
 type GoDotEnv struct {
 	filenames []string
 }
 
-var _ Preparer = &GoDotEnv{}
-
 func NewGoDotEnv() *GoDotEnv {
-	return &GoDotEnv{[]string{".env.local"}}
+	return &GoDotEnv{defaultFileNames()}
+}
+
+func defaultFileNames() []string {
+	return []string{".env.local"}
 }
 
 func (e *GoDotEnv) Prepare() error {

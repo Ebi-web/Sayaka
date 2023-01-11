@@ -6,16 +6,11 @@ import (
 
 	"Sayaka/controllers"
 	"Sayaka/lib"
-)
-
-var (
-	goDotEnv = lib.NewGoDotEnv()
+	"Sayaka/lib/godotenv"
 )
 
 func main() {
-	if err := preloadModules([]lib.Preparer{
-		goDotEnv,
-	}); err != nil {
+	if err := preloadModules(libraries()); err != nil {
 		panic("External modules setup unsuccessful")
 	}
 	fmt.Println("🎉Successful external modules setup")
@@ -34,6 +29,12 @@ func main() {
 	})
 
 	http.ListenAndServe(":8080", nil)
+}
+
+func libraries() []lib.Preparer {
+	return []lib.Preparer{
+		godotenv.NewGoDotEnv(),
+	}
 }
 
 func preloadModules(libs []lib.Preparer) error {
