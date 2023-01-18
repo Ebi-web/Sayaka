@@ -19,13 +19,9 @@ func main() {
 		w.WriteHeader(http.StatusOK)
 	})
 
-	http.HandleFunc("/chat", func(w http.ResponseWriter, r *http.Request) {
-		s, reply, err := controllers.Respond(w, r)
+	http.HandleFunc("/line/webhook", func(w http.ResponseWriter, r *http.Request) {
+		s, _ := controllers.ResLineWebhook(w, r)
 		w.WriteHeader(s)
-		if err != nil {
-			fmt.Fprintf(w, "I'm sorry, but would you retry the request?")
-		}
-		fmt.Fprintf(w, reply)
 	})
 
 	http.ListenAndServe(":8080", nil)
