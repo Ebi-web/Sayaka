@@ -1,6 +1,8 @@
 package godotenv
 
 import (
+	"fmt"
+
 	"Sayaka/lib"
 	"github.com/joho/godotenv"
 )
@@ -8,21 +10,23 @@ import (
 var _ lib.Preparer = &GoDotEnv{}
 
 type GoDotEnv struct {
-	filenames []string
+	localEnvFileName string
 }
 
 func NewGoDotEnv() *GoDotEnv {
-	return &GoDotEnv{defaultFileNames()}
+	return &GoDotEnv{localEnvFileName()}
 }
 
-func defaultFileNames() []string {
-	return []string{".env.local"}
+func localEnvFileName() string {
+	return ".env.local"
 }
 
 func (e *GoDotEnv) Prepare() error {
-	filenames := e.filenames
-	if err := godotenv.Load(filenames...); err != nil {
-		return err
+	lfn := e.localEnvFileName
+	if err := godotenv.Load(lfn); err != nil {
+		//considered as production environment
+		fmt.Println("ℹ️ Considered as production environment. Ensure that environment variables are set.")
+		return nil
 	}
 	return nil
 }
