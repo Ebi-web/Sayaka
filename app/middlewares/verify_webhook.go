@@ -10,7 +10,6 @@ import (
 )
 
 func Verify(req *http.Request) bool {
-	defer req.Body.Close()
 	body, err := io.ReadAll(req.Body)
 	if err != nil {
 		return false
