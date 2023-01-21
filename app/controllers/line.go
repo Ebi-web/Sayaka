@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"net/http"
 
 	"Sayaka/services/gpt3"
@@ -11,6 +12,7 @@ import (
 func ResLineWebhook(_ http.ResponseWriter, r *http.Request) (int, error) {
 	var webhookRequest line.WebhookRequest
 	if err := utils.ParseRequestBody(r, &webhookRequest); err != nil {
+		fmt.Println("Error: ", err)
 		return http.StatusBadRequest, err
 	}
 

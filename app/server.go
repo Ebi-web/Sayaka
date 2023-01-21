@@ -29,12 +29,13 @@ func (s *Server) Route() {
 	})
 
 	http.HandleFunc("/line/webhook", func(w http.ResponseWriter, r *http.Request) {
-		if middlewares.Verify(r) {
-			status, _ := controllers.ResLineWebhook(w, r)
-			w.WriteHeader(status)
+		if !middlewares.Verify(r) {
+			fmt.Println("🚫Invalid signature")
+			w.WriteHeader(http.StatusUnauthorized)
 			return
 		}
-		w.WriteHeader(http.StatusUnauthorized)
+		status, _ := controllers.ResLineWebhook(w, r)
+		w.WriteHeader(status)
 		return
 	})
 }
