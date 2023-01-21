@@ -84,7 +84,7 @@ func Chat(text string) (string, error) {
 }
 
 func prompt(text string) string {
-	t := `The following is a conversation with a friend chatbot. The friend is helpful, creative, clever, and very friendly.
+	t := `The following is a conversation with a friend chatbot whose name is Sayaka. The friend is helpful, creative, clever, and very friendly.
 
 You: What have you been up to?
 Friend: Watching old movies.
