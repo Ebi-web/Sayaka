@@ -2,4 +2,7 @@ module Sayaka
 
 go 1.19
 
-require github.com/joho/godotenv v1.4.0
+require (
+	github.com/joho/godotenv v1.4.0
+	github.com/justinas/alice v1.2.0
+)
