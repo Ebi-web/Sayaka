@@ -6,7 +6,15 @@ import (
 	"github.com/justinas/alice"
 )
 
-func NewAlice(handler http.Handler, middlewares ...func(h http.Handler) http.Handler) http.Handler {
+type Chain interface {
+	Then(h http.Handler) http.Handler
+}
+
+func NewAliceChain(middlewares ...func(h http.Handler) http.Handler) Chain {
+	return alice.New(newConstructors(middlewares...)...)
+}
+
+func NewAliceHandler(handler http.Handler, middlewares ...func(h http.Handler) http.Handler) http.Handler {
 	return alice.New(newConstructors(middlewares...)...).Then(handler)
 }
 

@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"Sayaka/controllers"
+	"Sayaka/lib/alice"
 	"Sayaka/middlewares"
 )
 
@@ -24,18 +25,16 @@ func (s *Server) Init() {
 }
 
 func (s *Server) Route() {
+	m := middlewares.NewValidateSignatureMiddleware()
+	webhookChain := alice.NewAliceChain(m.Handle)
+
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 	})
 
-	http.HandleFunc("/line/webhook", func(w http.ResponseWriter, r *http.Request) {
-		if !middlewares.Verify(r) {
-			fmt.Println("🚫Invalid signature")
-			w.WriteHeader(http.StatusUnauthorized)
-			return
-		}
+	http.Handle("/line/webhook", webhookChain.Then(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		status, _ := controllers.ResLineWebhook(w, r)
 		w.WriteHeader(status)
 		return
-	})
+	})))
 }
