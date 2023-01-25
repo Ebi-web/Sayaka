@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"net/http"
 
 	"Sayaka/services/gpt3"
@@ -8,34 +9,10 @@ import (
 	"Sayaka/utils"
 )
 
-type WebhookRequest struct {
-	Destination string  `json:"destination"`
-	Events      []Event `json:"events"`
-}
-
-type Event struct {
-	Type    string `json:"type"`
-	Message struct {
-		Type string `json:"type"`
-		ID   string `json:"id"`
-		Text string `json:"text"`
-	} `json:"message"`
-	WebhookEventID  string `json:"webhookEventId"`
-	DeliveryContext struct {
-		IsRedelivery bool `json:"isRedelivery"`
-	} `json:"deliveryContext"`
-	Timestamp int64 `json:"timestamp"`
-	Source    struct {
-		Type   string `json:"type"`
-		UserID string `json:"userId"`
-	} `json:"source"`
-	ReplyToken string `json:"replyToken"`
-	Mode       string `json:"mode"`
-}
-
 func ResLineWebhook(_ http.ResponseWriter, r *http.Request) (int, error) {
-	var webhookRequest WebhookRequest
+	var webhookRequest line.WebhookRequest
 	if err := utils.ParseRequestBody(r, &webhookRequest); err != nil {
+		fmt.Println("Error: ", err)
 		return http.StatusBadRequest, err
 	}
 
@@ -48,7 +25,7 @@ func ResLineWebhook(_ http.ResponseWriter, r *http.Request) (int, error) {
 	return http.StatusOK, nil
 }
 
-func eventHandler(e *Event) error {
+func eventHandler(e *line.Event) error {
 	if e.Type != "message" || e.Message.Type != "text" {
 		return nil
 	}
