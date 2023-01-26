@@ -1,6 +1,6 @@
-package line
+package webhook
 
-type WebhookRequest struct {
+type Request struct {
 	Destination string  `json:"destination"`
 	Events      []Event `json:"events"`
 }

@@ -6,11 +6,12 @@ import (
 
 	"Sayaka/services/gpt3"
 	"Sayaka/services/line"
+	"Sayaka/services/line/webhook"
 	"Sayaka/utils"
 )
 
 func ResLineWebhook(_ http.ResponseWriter, r *http.Request) (int, error) {
-	var webhookRequest line.WebhookRequest
+	var webhookRequest webhook.Request
 	if err := utils.ParseRequestBody(r, &webhookRequest); err != nil {
 		fmt.Println("Error: ", err)
 		return http.StatusBadRequest, err
@@ -25,7 +26,7 @@ func ResLineWebhook(_ http.ResponseWriter, r *http.Request) (int, error) {
 	return http.StatusOK, nil
 }
 
-func eventHandler(e *line.Event) error {
+func eventHandler(e *webhook.Event) error {
 	if e.Type != "message" || e.Message.Type != "text" {
 		return nil
 	}
