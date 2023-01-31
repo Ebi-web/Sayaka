@@ -1,4 +1,4 @@
-package controllers
+package handler
 
 import (
 	"fmt"
@@ -10,20 +10,27 @@ import (
 	"Sayaka/utils"
 )
 
-func ResLineWebhook(_ http.ResponseWriter, r *http.Request) (int, error) {
+type WebhookHandler struct {
+}
+
+func NewWebhookHandler() *WebhookHandler {
+	return &WebhookHandler{}
+}
+
+func (h *WebhookHandler) ResLineWebhook(_ http.ResponseWriter, r *http.Request) (int, interface{}, error) {
 	var webhookRequest webhook.Request
 	if err := utils.ParseRequestBody(r, &webhookRequest); err != nil {
 		fmt.Println("Error: ", err)
-		return http.StatusBadRequest, err
+		return http.StatusBadRequest, nil, err
 	}
 
 	events := webhookRequest.Events
 	for k := range events {
 		if err := eventHandler(&events[k]); err != nil {
-			return http.StatusInternalServerError, err
+			return http.StatusInternalServerError, nil, err
 		}
 	}
-	return http.StatusOK, nil
+	return http.StatusOK, nil, nil
 }
 
 func eventHandler(e *webhook.Event) error {

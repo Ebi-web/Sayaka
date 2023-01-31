@@ -1,14 +1,35 @@
-FROM golang:1.19
+FROM golang:1.19-alpine as build-air
 
-# Set the working directory to the project root
+RUN apk update && \
+    apk upgrade && \
+    apk add git bash --no-cache && \
+    go install github.com/cosmtrek/air@latest
+
+FROM golang:1.19-alpine as dev
+COPY --from=build-air /go/bin/air /go/bin/air
+
+RUN apk update && \
+    apk upgrade && \
+    apk add bash git --no-cache
+
+ENV GOOS=linux \
+    GOARCH=amd64 \
+    CGO_ENABLED=0
+
 WORKDIR /app
 
-# Copy the application source code
 COPY . .
+RUN go mod download
 
-# Expose the application's port
-EXPOSE 8080
+FROM golang:1.19-alpine as prod
 
-RUN go install github.com/cosmtrek/air@latest && \
-    go mod tidy
-CMD ["air"]
+WORKDIR /app
+
+RUN apk update && apk add git
+COPY go.mod go.sum ./
+RUN go mod download
+
+COPY . .
+ENV GOOS=linux \
+    GOARCH=amd64 \
+    CGO_ENABLED=0
