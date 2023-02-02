@@ -45,6 +45,7 @@ func (s *Server) Route() *mux.Router {
 	webhookChain := commonChain.Append(m.Handle)
 
 	webhookHandler := handler.NewWebhookHandler()
+	userHandler := handler.NewUserHandler(s.db)
 
 	r := mux.NewRouter()
 	r.Methods(http.MethodGet).Path("/").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -54,7 +55,7 @@ func (s *Server) Route() *mux.Router {
 
 	r.Methods(http.MethodPost, http.MethodOptions).Path("/line/webhook").Handler(webhookChain.Then(AppHandler{webhookHandler.ResLineWebhook}))
 
-	r.Methods(http.MethodPost, http.MethodOptions).Path("/users").Handler(commonChain.Then(AppHandler{}))
+	r.Methods(http.MethodPost, http.MethodOptions).Path("/users").Handler(commonChain.Then(AppHandler{userHandler.Create}))
 
 	return r
 }

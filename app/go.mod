@@ -9,6 +9,7 @@ require (
 	github.com/jmoiron/sqlx v1.3.5
 	github.com/joho/godotenv v1.4.0
 	github.com/justinas/alice v1.2.0
+	github.com/pkg/errors v0.9.1
 )
 
 require github.com/felixge/httpsnoop v1.0.1 // indirect

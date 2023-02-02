@@ -14,19 +14,31 @@ services:
     command: ["air"]
     depends_on:
       - db
+    networks:
+      - backend_network
   db:
     image: mysql:8.0
     container_name: db
     environment:
       MYSQL_ROOT_PASSWORD: password
       MYSQL_DATABASE: sayaka
+      MYSQL_USER: sayaka
+      MYSQL_PASSWORD: password
+      TZ: Asia/Tokyo
     volumes:
       - ./dbdata:/var/lib/mysql
     ports:
       - "3306:3306"
+    networks:
+      - backend_network
   migration:
     image: flyway/flyway
     volumes:
       - ./database/migration/schema:/flyway/sql
     depends_on:
       - db
+    networks:
+      - backend_network
+networks:
+  backend_network:
+    external: false

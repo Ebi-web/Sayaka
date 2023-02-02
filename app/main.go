@@ -16,7 +16,7 @@ func main() {
 	var databaseDatasource string
 
 	flag.IntVar(&port, "port", 8080, "API server port")
-	flag.StringVar(&databaseDatasource, "databaseDatasource", "mysql://root:password@tcp(127.0.0.1:3306)/sayaka?sslmode=disable", "")
+	flag.StringVar(&databaseDatasource, "databaseDatasource", "root:password@tcp(db:3306)/sayaka?charset=utf8mb4&collation=utf8mb4_general_ci&parseTime=True&loc=Local", "")
 	flag.Parse()
 
 	log.SetFlags(log.Ldate + log.Ltime + log.Lshortfile)
