@@ -4,9 +4,8 @@ import (
 	"net/http"
 
 	"Sayaka/db"
-	"github.com/pkg/errors"
-
 	"Sayaka/domain/model"
+	"Sayaka/domain/repository"
 	"Sayaka/services/line"
 	"Sayaka/utils"
 	"github.com/jmoiron/sqlx"
@@ -44,7 +43,7 @@ func (h *UserHandler) Create(_ http.ResponseWriter, r *http.Request) (int, inter
 	var createdID int64
 
 	if err = db.TXHandler(h.db, func(tx *sqlx.Tx) error {
-		id, err := InsertUser(tx, user)
+		id, err := repository.InsertUser(tx, user)
 		if err != nil {
 			return err
 		}
@@ -58,27 +57,4 @@ func (h *UserHandler) Create(_ http.ResponseWriter, r *http.Request) (int, inter
 	}
 
 	return http.StatusCreated, createdID, nil
-}
-
-func InsertUser(db *sqlx.Tx, user *model.User) (int64, error) {
-	stmt, err := db.Preparex("insert into users (line_user_id, display_name, photo_url) values (?,?,?)")
-	if err != nil {
-		return 0, errors.Wrap(err, "failed to set prepared statement")
-	}
-	defer func() {
-		if closeErr := stmt.Close(); closeErr != nil {
-			err = closeErr
-		}
-	}()
-
-	result, err := stmt.Exec(user.LINEUserID, user.DisplayName, user.PhotoURL)
-	if err != nil {
-		return 0, errors.Wrap(err, "failed to execute insert user")
-	}
-	id, err := result.LastInsertId()
-	if err != nil {
-		return 0, errors.Wrap(err, "failed to get last_insert_id")
-	}
-
-	return id, nil
 }

@@ -7,8 +7,8 @@ import (
 	"net/http"
 )
 
-func MakeRequest(method, url string, headers map[string]string, body []byte) ([]byte, error) {
-	req, err := http.NewRequest(method, url, bytes.NewBuffer(body))
+func MakeRequest(method, url string, headers map[string]string, body interface{}) ([]byte, error) {
+	req, err := http.NewRequest(method, url, parseBody(body))
 	if err != nil {
 		return nil, err
 	}
@@ -29,6 +29,17 @@ func MakeRequest(method, url string, headers map[string]string, body []byte) ([]
 	}
 
 	return responseBody, nil
+}
+
+func parseBody(b interface{}) io.Reader {
+	switch v := b.(type) {
+	case []byte:
+		return bytes.NewBuffer(v)
+	case string:
+		return bytes.NewBufferString(v)
+	default:
+		return nil
+	}
 }
 
 func ParseRequestBody(r *http.Request, v interface{}) error {

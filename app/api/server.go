@@ -44,8 +44,12 @@ func (s *Server) Route() *mux.Router {
 	m := middlewares.NewValidateSignatureMiddleware()
 	webhookChain := commonChain.Append(m.Handle)
 
+	am := middlewares.NewAuth(s.db)
+	authChain := commonChain.Append(am.Handle)
+
 	webhookHandler := handler.NewWebhookHandler()
 	userHandler := handler.NewUserHandler(s.db)
+	flashCardHandler := handler.NewFlashCardHandler(s.db)
 
 	r := mux.NewRouter()
 	r.Methods(http.MethodGet).Path("/").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -56,6 +60,9 @@ func (s *Server) Route() *mux.Router {
 	r.Methods(http.MethodPost, http.MethodOptions).Path("/line/webhook").Handler(webhookChain.Then(AppHandler{webhookHandler.ResLineWebhook}))
 
 	r.Methods(http.MethodPost, http.MethodOptions).Path("/users").Handler(commonChain.Then(AppHandler{userHandler.Create}))
+
+	r.Methods(http.MethodPost, http.MethodOptions).Path("/flash-cards").Handler(authChain.Then(AppHandler{flashCardHandler.Create}))
+	r.Methods(http.MethodGet, http.MethodOptions).Path("/flash-cards").Handler(authChain.Then(AppHandler{flashCardHandler.Index}))
 
 	return r
 }

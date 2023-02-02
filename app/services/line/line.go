@@ -15,9 +15,9 @@ const (
 	verifyEndpointSuffix  = "/oauth2/v2.1/verify"
 	profileEndpointSuffix = "/v2/profile"
 
-	replyEndpoint   = baseEndpoint + replyEndpointSuffix
-	verifyEndpoint  = baseEndpoint + verifyEndpointSuffix
-	profileEndpoint = baseEndpoint + profileEndpointSuffix
+	ReplyEndpoint   = baseEndpoint + replyEndpointSuffix
+	VerifyEndpoint  = baseEndpoint + verifyEndpointSuffix
+	ProfileEndpoint = baseEndpoint + profileEndpointSuffix
 )
 
 type ReplyObject struct {
@@ -48,7 +48,7 @@ func Reply(token string, text string) error {
 		"Content-Type":  "application/json",
 		"Authorization": "Bearer " + os.Getenv("LINE_CHANNEL_ACCESS_TOKEN"),
 	}
-	_, err = utils.MakeRequest(method, replyEndpoint, headers, body)
+	_, err = utils.MakeRequest(method, ReplyEndpoint, headers, body)
 	if err != nil {
 		return err
 	}
@@ -61,7 +61,7 @@ func GetProfileByAccessToken(accessToken string) (AuthResponse, error) {
 
 	params := url.Values{}
 	params.Add("access_token", accessToken)
-	ep := verifyEndpoint + "?" + params.Encode()
+	ep := VerifyEndpoint + "?" + params.Encode()
 
 	_, err := utils.MakeRequest(method, ep, headers, nil)
 	if err != nil {
@@ -72,7 +72,7 @@ func GetProfileByAccessToken(accessToken string) (AuthResponse, error) {
 	headers = map[string]string{
 		"Authorization": "Bearer " + accessToken,
 	}
-	res, err := utils.MakeRequest(method, profileEndpoint, headers, nil)
+	res, err := utils.MakeRequest(method, ProfileEndpoint, headers, nil)
 
 	var authRes AuthResponse
 	if err = json.Unmarshal(res, &authRes); err != nil {
