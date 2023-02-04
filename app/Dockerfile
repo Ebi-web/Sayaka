@@ -25,7 +25,7 @@ FROM golang:1.19-alpine as prod
 
 WORKDIR /app
 
-RUN apk update && apk add git
+RUN apk update && apk upgrade && apk add bash git --no-cache
 COPY go.mod go.sum ./
 RUN go mod download
 

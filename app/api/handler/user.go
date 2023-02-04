@@ -15,7 +15,7 @@ type UserHandler struct {
 	db *sqlx.DB
 }
 
-type CreateUserRequest struct {
+type RegisterRequest struct {
 	AccessToken string `json:"access_token"`
 }
 
@@ -23,8 +23,8 @@ func NewUserHandler(db *sqlx.DB) *UserHandler {
 	return &UserHandler{db}
 }
 
-func (h *UserHandler) Create(_ http.ResponseWriter, r *http.Request) (int, interface{}, error) {
-	var req CreateUserRequest
+func (h *UserHandler) Register(_ http.ResponseWriter, r *http.Request) (int, interface{}, error) {
+	var req RegisterRequest
 	if err := utils.ParseRequestBody(r, &req); err != nil {
 		return http.StatusInternalServerError, nil, err
 	}
@@ -38,6 +38,11 @@ func (h *UserHandler) Create(_ http.ResponseWriter, r *http.Request) (int, inter
 		LINEUserID:  pf.UserID,
 		DisplayName: pf.DisplayName,
 		PhotoURL:    pf.PictureURL,
+	}
+
+	userFromDB, err := repository.FindUserByLINEID(h.db, user.LINEUserID)
+	if userFromDB != nil {
+		return http.StatusOK, nil, nil
 	}
 
 	var createdID int64

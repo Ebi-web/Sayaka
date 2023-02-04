@@ -59,7 +59,7 @@ func (s *Server) Route() *mux.Router {
 
 	r.Methods(http.MethodPost, http.MethodOptions).Path("/line/webhook").Handler(webhookChain.Then(AppHandler{webhookHandler.ResLineWebhook}))
 
-	r.Methods(http.MethodPost, http.MethodOptions).Path("/users").Handler(commonChain.Then(AppHandler{userHandler.Create}))
+	r.Methods(http.MethodPost, http.MethodOptions).Path("/users/register").Handler(commonChain.Then(AppHandler{userHandler.Register}))
 
 	r.Methods(http.MethodPost, http.MethodOptions).Path("/flash-cards").Handler(authChain.Then(AppHandler{flashCardHandler.Create}))
 	r.Methods(http.MethodGet, http.MethodOptions).Path("/flash-cards").Handler(authChain.Then(AppHandler{flashCardHandler.Index}))
