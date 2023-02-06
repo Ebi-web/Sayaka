@@ -10,6 +10,7 @@ require (
 	github.com/joho/godotenv v1.4.0
 	github.com/justinas/alice v1.2.0
 	github.com/pkg/errors v0.9.1
+	github.com/rs/cors v1.8.3
 )
 
 require github.com/felixge/httpsnoop v1.0.1 // indirect

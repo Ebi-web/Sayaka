@@ -13,6 +13,7 @@ import (
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"github.com/jmoiron/sqlx"
+	"github.com/rs/cors"
 )
 
 type Server struct {
@@ -39,7 +40,21 @@ func (s *Server) Init(databaseDatasource string) error {
 }
 
 func (s *Server) Route() *mux.Router {
-	commonChain := alice.NewAliceChain()
+	corsMiddleware := cors.New(cors.Options{
+		AllowedOrigins: []string{"*"},
+		AllowedHeaders: []string{"Authorization", "Accept-Language", "Content-Type", "Content-Language", "Origin"},
+		AllowedMethods: []string{
+			http.MethodOptions,
+			http.MethodHead,
+			http.MethodGet,
+			http.MethodPost,
+			http.MethodPut,
+			http.MethodPatch,
+			http.MethodDelete,
+		},
+	})
+
+	commonChain := alice.NewAliceChain(corsMiddleware.Handler)
 
 	m := middlewares.NewValidateSignatureMiddleware()
 	webhookChain := commonChain.Append(m.Handle)
