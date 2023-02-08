@@ -23,6 +23,11 @@ jobs:
         name: Checkout
 
       - name: 'Run Migration'
+        env:
+            DB_HOST: ${{secrets.DB_HOST}}
+            DB_NAME: ${{secrets.DB_NAME}}
+            DB_USER: ${{secrets.DB_USER}}
+            DB_PASSWORD: ${{secrets.DB_PASSWORD}}
         id: 'migration'
         run: |
-          docker run -v $(pwd)/database/migration/schema:/flyway/sql -i --rm flyway/flyway -url=jdbc:mysql://${{secrets.DB_HOST}}/${{secrets.DB_NAME}} -user=${{secrets.DB_USER}} -password=${{secrets.DB_PASSWORD}} migrate
+          docker run -v $(pwd)/database/migration/schema:/flyway/sql -i --rm flyway/flyway -url=jdbc:mysql://${{env.DB_HOST}}/${{env.DB_NAME}} -user=${{env.DB_USER}} -password=${{env.DB_PASSWORD}} migrate
