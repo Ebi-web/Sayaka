@@ -10,14 +10,9 @@ on:
   pull_request:
     branches:
       - main
-    types: [closed]
+    types: [ closed ]
     paths:
       - 'database/migration/**'
-
-env:
-  PROJECT_ID: treasure-app-2022-g
-  SERVICE: backend
-  REGION: asia-northeast1
 
 jobs:
   migration:
@@ -30,4 +25,4 @@ jobs:
       - name: 'Run Migration'
         id: 'migration'
         run: |
-          docker run -v $(pwd)/database/migration/schema:/flyway/sql -i --rm flyway/flyway -url=jdbc:mysql://${{env.DB_HOST}}:${{env.DB_PORT}}/${{DB_NAME}} -user=${{env.DB_USER}} -password=${{env.DB_PASSWORD}} migrate
+          docker run -v $(pwd)/database/migration/schema:/flyway/sql -i --rm flyway/flyway -url=jdbc:mysql://${{secrets.DB_HOST}}:${{secrets.DB_PORT}}/${{secrets.DB_NAME}} -user=${{secrets.DB_USER}} -password=${{secrets.DB_PASSWORD}} migrate
