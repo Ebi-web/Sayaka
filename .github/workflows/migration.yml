@@ -25,4 +25,4 @@ jobs:
       - name: 'Run Migration'
         id: 'migration'
         run: |
-          docker run -v $(pwd)/database/migration/schema:/flyway/sql -i --rm flyway/flyway -url=jdbc:mysql://${{secrets.DB_HOST}}:${{secrets.DB_PORT}}/${{secrets.DB_NAME}} -user=${{secrets.DB_USER}} -password=${{secrets.DB_PASSWORD}} migrate
+          docker run -v $(pwd)/database/migration/schema:/flyway/sql -i --rm flyway/flyway -url=jdbc:mysql://${{secrets.DB_HOST}}/${{secrets.DB_NAME}} -user=${{secrets.DB_USER}} -password=${{secrets.DB_PASSWORD}} migrate
