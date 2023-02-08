@@ -1,0 +1,33 @@
+name: Run Migration
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - develop
+    paths:
+      - 'database/migration/**'
+  pull_request:
+    branches:
+      - main
+    types: [closed]
+    paths:
+      - 'database/migration/**'
+
+env:
+  PROJECT_ID: treasure-app-2022-g
+  SERVICE: backend
+  REGION: asia-northeast1
+
+jobs:
+  migration:
+
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        name: Checkout
+
+      - name: 'Run Migration'
+        id: 'migration'
+        run: |
+          docker run -v $(pwd)/database/migration/schema:/flyway/sql -i --rm flyway/flyway -url=jdbc:mysql://${{env.DB_HOST}}:${{env.DB_PORT}}/${{DB_NAME}} -user=${{env.DB_USER}} -password=${{env.DB_PASSWORD}} migrate
