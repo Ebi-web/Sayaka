@@ -28,7 +28,7 @@ func NewServer() *Server {
 func (s *Server) Init(databaseDatasource string) error {
 	fmt.Println("ℹ️Server Initialising...")
 
-	sql := db.NewMySQL(databaseDatasource)
+	sql := db.NewPostgreSQL(databaseDatasource)
 	dbConnection, err := sql.Open()
 	if err != nil {
 		return fmt.Errorf("🚫failed db init. %s", err)

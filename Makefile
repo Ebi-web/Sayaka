@@ -1,10 +1,10 @@
-DBUSER:=root
+DBUSER:=postgres
 DBPASSWORD:=password
-DBPORT:=3306
+DBPORT:=5432
 DBNAME:=sayaka
 DOCKER_DNS:=db
 DOCKER_COMPOSE_IMPL:=docker-compose
-FLYWAY_CONF?=-url=jdbc:mysql://$(DOCKER_DNS):$(DBPORT)/$(DBNAME) -user=$(DBUSER) -password=$(DBPASSWORD)
+FLYWAY_CONF?=-url=jdbc:postgresql://$(DOCKER_DNS):$(DBPORT)/$(DBNAME) -user=$(DBUSER) -password=$(DBPASSWORD)
 MIGRATION_SERVICE:=migration
 .PHONY: flyway/info
 flyway/info:
