@@ -15,25 +15,26 @@ on:
       - 'database/migration/**'
 
 env:
-  DB_HOST: ${{secrets.DB_HOST}}
-  DB_NAME: ${{secrets.DB_NAME}}
-  DB_USER: ${{secrets.DB_USER}}
-  DB_PASSWORD: ${{secrets.DB_PASSWORD}}
+  DB_HOST_STAGING: ${{secrets.DB_HOST_STAGING}}
+  DB_NAME_STAGING: ${{secrets.DB_NAME_STAGING}}
+  DB_USER_STAGING: ${{secrets.DB_USER_STAGING}}
+  DB_PASSWORD_STAGING: ${{secrets.DB_PASSWORD_STAGING}}
 
 jobs:
-  migration:
+  migration_staging:
 
     runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/develop'
     steps:
       - uses: actions/checkout@v3
         name: Checkout
 
       - name: 'Run Migration'
         env:
-          DB_HOST:${{env.DB_HOST}}
-          DB_NAME:${{env.DB_NAME}}
-          DB_USER:${{env.DB_USER}}
-          DB_PASSWORD:${{env.DB_PASSWORD}}
+          DB_HOST_STAGING:${{env.DB_HOST_STAGING}}
+          DB_NAME_STAGING:${{env.DB_NAME_STAGING}}
+          DB_USER_STAGING:${{env.DB_USER_STAGING}}
+          DB_PASSWORD_STAGING:${{env.DB_PASSWORD_STAGING}}
         id: 'migration'
         run: |
-          docker run -v $(pwd)/database/migration/schema:/flyway/sql -i --rm flyway/flyway -url=jdbc:postgresql://${{env.DB_HOST}}/${{env.DB_NAME}} -user=${{env.DB_USER}} -password=${{env.DB_PASSWORD}} migrate
+          docker run -v $(pwd)/database/migration/schema:/flyway/sql -i --rm flyway/flyway -url=jdbc:postgresql://${{env.DB_HOST_STAGING}}/${{env.DB_NAME_STAGING}} -user=${{env.DB_USER_STAGING}} -password=${{env.DB_PASSWORD_STAGING}} migrate
