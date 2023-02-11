@@ -14,12 +14,6 @@ on:
     paths:
       - 'database/migration/**'
 
-env:
-  DB_HOST_STAGING: ${{secrets.DB_HOST_STAGING}}
-  DB_NAME_STAGING: ${{secrets.DB_NAME_STAGING}}
-  DB_USER_STAGING: ${{secrets.DB_USER_STAGING}}
-  DB_PASSWORD_STAGING: ${{secrets.DB_PASSWORD_STAGING}}
-
 jobs:
   migration_staging:
 
@@ -31,10 +25,10 @@ jobs:
 
       - name: 'Run Migration'
         env:
-          DB_HOST_STAGING:${{env.DB_HOST_STAGING}}
-          DB_NAME_STAGING:${{env.DB_NAME_STAGING}}
-          DB_USER_STAGING:${{env.DB_USER_STAGING}}
-          DB_PASSWORD_STAGING:${{env.DB_PASSWORD_STAGING}}
+          DB_HOST_STAGING:${{secrets.DB_HOST_STAGING}}
+          DB_NAME_STAGING:${{secrets.DB_NAME_STAGING}}
+          DB_USER_STAGING:${{secrets.DB_USER_STAGING}}
+          DB_PASSWORD_STAGING:${{secrets.DB_PASSWORD_STAGING}}
         id: 'migration'
         run: |
           docker run -v $(pwd)/database/migration/schema:/flyway/sql -i --rm flyway/flyway -url=jdbc:postgresql://${{env.DB_HOST_STAGING}}/${{env.DB_NAME_STAGING}} -user=${{env.DB_USER_STAGING}} -password=${{env.DB_PASSWORD_STAGING}} migrate
