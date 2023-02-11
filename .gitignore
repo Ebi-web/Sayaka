@@ -1,4 +1,4 @@
 .idea
 /app/tmp
 app/.env.local
-dbdata
+data-volume
