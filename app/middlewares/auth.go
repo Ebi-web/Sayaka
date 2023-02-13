@@ -2,6 +2,7 @@ package middlewares
 
 import (
 	"context"
+	"database/sql"
 	"encoding/json"
 	"log"
 	"net/http"
@@ -44,7 +45,7 @@ func (a *Auth) Handle(next http.Handler) http.Handler {
 			return
 		}
 		usr, err := repository.FindUserByLINEID(a.db, verified.LINEUserID)
-		if err != nil {
+		if err != nil && !errors.Is(err, sql.ErrNoRows) {
 			log.Print(err.Error())
 			utils.RespondErrorJson(w, http.StatusInternalServerError, err)
 			return

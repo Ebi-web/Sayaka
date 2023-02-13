@@ -23,7 +23,7 @@ jobs:
       - uses: actions/checkout@v3
         name: Checkout
 
-      - name: 'Run Migration'
+      - name: 'Run Staging Migration'
         env:
           DB_HOST_STAGING: ${{ secrets.DB_HOST_STAGING }}
           DB_NAME_STAGING: ${{ secrets.DB_NAME_STAGING }}
