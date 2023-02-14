@@ -4,13 +4,15 @@ import (
 	"bytes"
 	"encoding/json"
 	"io"
+	"log"
 	"net/http"
 
 	"github.com/pkg/errors"
 )
 
 func MakeRequest(method, url string, headers map[string]string, body interface{}) ([]byte, error) {
-	req, err := http.NewRequest(method, url, parseBody(body))
+	b := parseBody(body)
+	req, err := http.NewRequest(method, url, b)
 	if err != nil {
 		return nil, err
 	}
@@ -21,6 +23,7 @@ func MakeRequest(method, url string, headers map[string]string, body interface{}
 	client := &http.Client{}
 	res, err := client.Do(req)
 	if res.StatusCode >= http.StatusBadRequest {
+		log.Print("Request Body: ", req.Body)
 		return nil, errors.New(res.Status)
 	}
 	if err != nil {

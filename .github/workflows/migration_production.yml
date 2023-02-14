@@ -1,4 +1,4 @@
-name: Run Migration
+name: Run PRODUCTION Migration
 
 on:
   workflow_dispatch:
