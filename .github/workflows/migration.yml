@@ -1,7 +1,6 @@
 name: Run Migration
 
 on:
-  workflow_dispatch:
   push:
     branches:
       - develop
@@ -16,7 +15,6 @@ on:
 
 jobs:
   migration_staging:
-
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/develop'
     steps:
@@ -29,6 +27,23 @@ jobs:
           DB_NAME_STAGING: ${{ secrets.DB_NAME_STAGING }}
           DB_USER_STAGING: ${{ secrets.DB_USER_STAGING }}
           DB_PASSWORD_STAGING: ${{ secrets.DB_PASSWORD_STAGING }}
-        id: 'migration'
+        id: 'migration staging'
         run: |
           docker run -v $(pwd)/database/migration/schema:/flyway/sql -i --rm flyway/flyway -url=jdbc:postgresql://${{env.DB_HOST_STAGING}}/${{env.DB_NAME_STAGING}} -user=${{env.DB_USER_STAGING}} -password=${{env.DB_PASSWORD_STAGING}} migrate
+
+  migration_production:
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.merged == true
+    steps:
+      - uses: actions/checkout@v3
+        name: Checkout
+
+      - name: 'Run Production Migration'
+        env:
+          DB_HOST_PRODUCTION: ${{ secrets.DB_HOST_PRODUCTION }}
+          DB_NAME_PRODUCTION: ${{ secrets.DB_NAME_PRODUCTION }}
+          DB_USER_PRODUCTION: ${{ secrets.DB_USER_PRODUCTION }}
+          DB_PASSWORD_PRODUCTION: ${{ secrets.DB_PASSWORD_PRODUCTION }}
+        id: 'migration production'
+        run: |
+          docker run -v $(pwd)/database/migration/schema:/flyway/sql -i --rm flyway/flyway -url=jdbc:postgresql://${{env.DB_HOST_PRODUCTION}}/${{env.DB_NAME_PRODUCTION}} -user=${{env.DB_USER_PRODUCTION}} -password=${{env.DB_PASSWORD_PRODUCTION}} migrate
