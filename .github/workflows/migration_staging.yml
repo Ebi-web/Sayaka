@@ -1,4 +1,4 @@
-name: Run Migration
+name: Run STAGING Migration
 
 on:
   workflow_dispatch:
