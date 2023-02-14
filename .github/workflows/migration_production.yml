@@ -1,11 +1,7 @@
 name: Run Migration
 
 on:
-  push:
-    branches:
-      - develop
-    paths:
-      - 'database/migration/**'
+  workflow_dispatch:
   pull_request:
     branches:
       - main
@@ -14,26 +10,9 @@ on:
       - 'database/migration/**'
 
 jobs:
-  migration_staging:
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/develop'
-    steps:
-      - uses: actions/checkout@v3
-        name: Checkout
-
-      - name: 'Run Staging Migration'
-        env:
-          DB_HOST_STAGING: ${{ secrets.DB_HOST_STAGING }}
-          DB_NAME_STAGING: ${{ secrets.DB_NAME_STAGING }}
-          DB_USER_STAGING: ${{ secrets.DB_USER_STAGING }}
-          DB_PASSWORD_STAGING: ${{ secrets.DB_PASSWORD_STAGING }}
-        id: 'migration_staging'
-        run: |
-          docker run -v $(pwd)/database/migration/schema:/flyway/sql -i --rm flyway/flyway -url=jdbc:postgresql://${{env.DB_HOST_STAGING}}/${{env.DB_NAME_STAGING}} -user=${{env.DB_USER_STAGING}} -password=${{env.DB_PASSWORD_STAGING}} migrate
-
   migration_production:
     runs-on: ubuntu-latest
-    if: github.event.pull_request.merged == true
+    if: github.event.pull_request.merged == true || github.event_name == 'workflow_dispatch'
     steps:
       - uses: actions/checkout@v3
         name: Checkout
