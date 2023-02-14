@@ -65,17 +65,17 @@ func Chat(text string) (string, error) {
 
 	body, err := json.Marshal(req)
 	if err != nil {
-		return "", nil
+		return "", err
 	}
 
 	res, err := utils.MakeRequest(method, url, headers, body)
 	if err != nil {
-		return "", nil
+		return "", err
 	}
 
 	var chatResponse ChatResponse
 	if err = json.Unmarshal(res, &chatResponse); err != nil {
-		return "", nil
+		return "", err
 	}
 
 	t := chatResponse.Choices[0].Text
