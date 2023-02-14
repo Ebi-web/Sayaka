@@ -5,10 +5,12 @@ import (
 	"encoding/json"
 	"io"
 	"net/http"
+
+	"github.com/pkg/errors"
 )
 
-func MakeRequest(method, url string, headers map[string]string, body []byte) ([]byte, error) {
-	req, err := http.NewRequest(method, url, bytes.NewBuffer(body))
+func MakeRequest(method, url string, headers map[string]string, body interface{}) ([]byte, error) {
+	req, err := http.NewRequest(method, url, parseBody(body))
 	if err != nil {
 		return nil, err
 	}
@@ -18,6 +20,9 @@ func MakeRequest(method, url string, headers map[string]string, body []byte) ([]
 
 	client := &http.Client{}
 	res, err := client.Do(req)
+	if res.StatusCode >= http.StatusBadRequest {
+		return nil, errors.New(res.Status)
+	}
 	if err != nil {
 		return nil, err
 	}
@@ -31,16 +36,27 @@ func MakeRequest(method, url string, headers map[string]string, body []byte) ([]
 	return responseBody, nil
 }
 
+func parseBody(b interface{}) io.Reader {
+	switch v := b.(type) {
+	case []byte:
+		return bytes.NewBuffer(v)
+	case string:
+		return bytes.NewBufferString(v)
+	default:
+		return nil
+	}
+}
+
 func ParseRequestBody(r *http.Request, v interface{}) error {
 	// リクエストボディを読み込む
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
-		return err
+		return errors.Wrap(err, "failed to read request body")
 	}
 
 	// リクエストボディを指定した型にマッピングする
 	if err := json.Unmarshal(body, v); err != nil {
-		return err
+		return errors.Wrap(err, "failed to unmarshal request body")
 	}
 
 	return nil

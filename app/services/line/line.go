@@ -2,6 +2,7 @@ package line
 
 import (
 	"encoding/json"
+	"net/url"
 	"os"
 
 	"Sayaka/services/line/messages"
@@ -9,15 +10,26 @@ import (
 )
 
 const (
-	baseEndpoint        = "https://api.line.me/v2/bot"
-	replyEndpointSuffix = "/message/reply/"
+	baseEndpoint          = "https://api.line.me"
+	replyEndpointSuffix   = "/v2/bot/message/reply/"
+	verifyEndpointSuffix  = "/oauth2/v2.1/verify"
+	profileEndpointSuffix = "/v2/profile"
 
-	replyEndpoint = baseEndpoint + replyEndpointSuffix
+	ReplyEndpoint   = baseEndpoint + replyEndpointSuffix
+	VerifyEndpoint  = baseEndpoint + verifyEndpointSuffix
+	ProfileEndpoint = baseEndpoint + profileEndpointSuffix
 )
 
 type ReplyObject struct {
 	ReplyToken string               `json:"replyToken"`
 	Messages   []messages.TextReply `json:"messages"`
+}
+
+type AuthResponse struct {
+	UserID        string `json:"userId"`
+	DisplayName   string `json:"displayName"`
+	PictureURL    string `json:"pictureUrl,omitempty"`
+	StatusMessage string `json:"statusMessage,omitempty"`
 }
 
 func Reply(token string, text string) error {
@@ -36,9 +48,36 @@ func Reply(token string, text string) error {
 		"Content-Type":  "application/json",
 		"Authorization": "Bearer " + os.Getenv("LINE_CHANNEL_ACCESS_TOKEN"),
 	}
-	_, err = utils.MakeRequest(method, replyEndpoint, headers, body)
+	_, err = utils.MakeRequest(method, ReplyEndpoint, headers, body)
 	if err != nil {
 		return err
 	}
 	return nil
+}
+
+func GetProfileByAccessToken(accessToken string) (AuthResponse, error) {
+	method := "GET"
+	headers := map[string]string{}
+
+	params := url.Values{}
+	params.Add("access_token", accessToken)
+	ep := VerifyEndpoint + "?" + params.Encode()
+
+	_, err := utils.MakeRequest(method, ep, headers, nil)
+	if err != nil {
+		return AuthResponse{}, err
+	}
+
+	method = "GET"
+	headers = map[string]string{
+		"Authorization": "Bearer " + accessToken,
+	}
+	res, err := utils.MakeRequest(method, ProfileEndpoint, headers, nil)
+
+	var authRes AuthResponse
+	if err = json.Unmarshal(res, &authRes); err != nil {
+		return AuthResponse{}, err
+	}
+
+	return authRes, nil
 }
