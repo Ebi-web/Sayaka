@@ -2,6 +2,7 @@ package line
 
 import (
 	"encoding/json"
+	"log"
 	"net/url"
 	"os"
 
@@ -50,6 +51,8 @@ func Reply(token string, text string) error {
 	}
 	_, err = utils.MakeRequest(method, ReplyEndpoint, headers, body)
 	if err != nil {
+		log.Println(token)
+		log.Println(text)
 		return err
 	}
 	return nil
